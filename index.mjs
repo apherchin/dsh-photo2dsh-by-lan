@@ -173,6 +173,7 @@ export function stateSnapshot(state) {
 		notify: state.doc.notify,
 		requireToken: state.doc.requireToken,
 		lanOnly: state.doc.lanOnly,
+		sidecar: state.doc.sidecar !== false,
 		token: state.doc.token,
 		uploadUrl: buildUploadUrl({ ip: chosen ?? "<这台PC的IP>", port: state.doc.port, token: state.doc.token }),
 		lan: chosen ?? null,
@@ -353,19 +354,26 @@ async function handleRequest(state, request, log) {
 		payload,
 		name: fileName,
 		kind,
-		meta: { remote, ua, declaredContentType: ctype, framing: mode === "multipart" ? `${framing}+multipart` : framing, note: noteOfTarget(target) },
+		meta: {
+			remote, ua, declaredContentType: ctype,
+			framing: mode === "multipart" ? `${framing}+multipart` : framing,
+			note: noteOfTarget(target),
+			// 面板里的开关：关掉就只留照片，不写元数据卡
+			writeSidecar: state.doc.sidecar !== false,
+		},
 	});
 
 	state.received += 1;
 	state.lastUpload = {
-		file: landed.sidecar.file,
+		file: landed.meta.file,
 		bytes: landed.bytes,
 		kind,
-		at: landed.sidecar.receivedAt,
-		atLocal: landed.sidecar.receivedAtLocal,
+		at: landed.meta.receivedAt,
+		atLocal: landed.meta.receivedAtLocal,
 		remote,
+		sidecar: landed.sidecarPath !== null,
 	};
-	log(`200 落盘 ${landed.full} bytes=${landed.bytes} kind=${kind} mode=${mode} framing=${framing} sha256=${landed.sha256.slice(0, 16)}`);
+	log(`200 落盘 ${landed.full} bytes=${landed.bytes} kind=${kind} mode=${mode} framing=${framing} sidecar=${landed.sidecarPath !== null} sha256=${landed.sha256.slice(0, 16)}`);
 
 	// ── 通知（失败不影响落盘） ────────────────────────────────────
 	if (state.doc.notify !== false && state.notifier) {
@@ -375,7 +383,7 @@ async function handleRequest(state, request, log) {
 			state.notifyTimes.push(now);
 			void state.notifier.show(
 				"照片已收到",
-				`${formatLabel(kind)} · ${humanSize(landed.bytes)} · ${landed.sidecar.file}`,
+				`${formatLabel(kind)} · ${humanSize(landed.bytes)} · ${landed.meta.file}`,
 			);
 		} else {
 			log("通知被限流（一分钟内已弹 10 条）");
@@ -384,12 +392,12 @@ async function handleRequest(state, request, log) {
 
 	if (wantsJson(target)) {
 		return json(200, {
-			ok: true, kind, bytes: landed.bytes, file: landed.sidecar.file,
+			ok: true, kind, bytes: landed.bytes, file: landed.meta.file,
 			mode, framing, sha256: landed.sha256,
 		});
 	}
 	return text(200, uploadedText({
-		kind, bytes: landed.bytes, file: landed.sidecar.file, when: landed.sidecar.receivedAtLocal,
+		kind, bytes: landed.bytes, file: landed.meta.file, when: landed.meta.receivedAtLocal,
 	}));
 }
 

@@ -70,7 +70,9 @@ export async function landPhoto({ rootDir, payload, name, kind, meta = {} }) {
 	}
 	const info = await stat(full);
 
-	const sidecar = {
+	// 元数据对象**总是**构造（上层要用它做 lastUpload / 通知文案）；
+	// 但只有开关打开时才**落盘**成 sidecar 文件。
+	const meta0 = {
 		schema: 1,
 		file: full.slice(dayDir.length + 1),
 		originalName: safeName(name),
@@ -85,12 +87,17 @@ export async function landPhoto({ rootDir, payload, name, kind, meta = {} }) {
 		remote: meta.remote ?? "",
 		ua: meta.ua ?? "",
 	};
-	const sidecarPath = `${full.replace(/\.[^.]*$/, "")}.json`;
-	try {
-		await writeFile(sidecarPath, `${JSON.stringify(sidecar, null, 2)}\n`, "utf8");
-	} catch {
-		// 有意忽略：索引写不进去不能连累照片
+
+	let sidecarPath = null;
+	if (meta.writeSidecar !== false) {
+		const candidate = `${full.replace(/\.[^.]*$/, "")}.json`;
+		try {
+			await writeFile(candidate, `${JSON.stringify(meta0, null, 2)}\n`, "utf8");
+			sidecarPath = candidate;
+		} catch {
+			// 有意忽略：元数据写不进去绝不能连累照片本身
+		}
 	}
 
-	return { full, sidecarPath, bytes: info.size, sha256: digest, sidecar };
+	return { full, sidecarPath, bytes: info.size, sha256: digest, meta: meta0 };
 }

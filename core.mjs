@@ -187,6 +187,8 @@ export function defaultDocument(dir) {
 		requireToken: true,
 		// 只接受局域网来源。**默认开**：它是"关掉 token 之后唯一的来源闸门"。
 		lanOnly: true,
+		// 每张照片旁的元数据卡（同名 .json）。**默认开**；嫌目录乱可在面板里关掉。
+		sidecar: true,
 	};
 }
 
@@ -233,6 +235,9 @@ export function normalizeDocument(raw, fallback) {
 
 	if (typeof raw.lanOnly === "boolean") base.lanOnly = raw.lanOnly;
 	else if (raw.lanOnly !== undefined) problems.push("lanOnly 不是布尔值，已忽略");
+
+	if (typeof raw.sidecar === "boolean") base.sidecar = raw.sidecar;
+	else if (raw.sidecar !== undefined) problems.push("sidecar 不是布尔值，已忽略");
 
 	return { doc: base, problems };
 }

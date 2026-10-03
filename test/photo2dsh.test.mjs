@@ -414,7 +414,26 @@ check("★★ 关键：不用 token 时，跨源请求**仍必须**被拒（第�
 	return r.status === 403;
 })());
 
-check("stateSnapshot 暴露 lanOnly 供面板显示", host.__internals.stateSnapshot(makeState()).lanOnly === true);
+check("stateSnapshot 暴露 lanOnly 与 sidecar 供面板显示", (() => {
+	const s = host.__internals.stateSnapshot(makeState());
+	return s.lanOnly === true && s.sidecar === true;
+})());
+
+// ── ★ 元数据卡（sidecar）可开关 ────────────────────────────────
+check("★ sidecar 开：每张照片旁有元数据卡", await (async () => {
+	const dir = mkTmp("sc-on");
+	const state = makeState({ doc: { ...core.defaultDocument(dir), token: "t".repeat(32), sidecar: true } });
+	await host.__internals.handleRequest(state, req(), noop);
+	return listFiles(dir).some((f) => f.endsWith(".json"));
+})());
+
+check("★ sidecar 关：目录里只剩照片、且照片本身照常落盘", await (async () => {
+	const dir = mkTmp("sc-off");
+	const state = makeState({ doc: { ...core.defaultDocument(dir), token: "t".repeat(32), sidecar: false } });
+	const r = await host.__internals.handleRequest(state, req(), noop);
+	const files = listFiles(dir);
+	return r.status === 200 && files.some((f) => f.endsWith(".png")) && !files.some((f) => f.endsWith(".json"));
+})());
 
 check("配置文档：写入后能读回，且 token 自动生成（16 字节 → 32 个十六进制字符 = 128 bit）", await (async () => {
 	const home = mkTmp("home2");
@@ -481,15 +500,20 @@ if (clientExports !== null) {
 		return text.includes(`id: "${pkg.name}"`);
 	})());
 
-	check("draftFromState：上限按 MB 展示，带 lanIp 与 lanOnly", (() => {
-		const d = ci.draftFromState({ dir: "C:\\x", port: 8787, lanIp: "192.168.5.22", maxBytes: 64 * 1024 * 1024, notify: true, requireToken: true, lanOnly: true });
-		return d.maxMB === "64" && d.port === "8787" && d.notify === true && d.lanIp === "192.168.5.22" && d.lanOnly === true;
+	check("draftFromState：上限按 MB 展示，带 lanIp / lanOnly / sidecar", (() => {
+		const d = ci.draftFromState({ dir: "C:\\x", port: 8787, lanIp: "192.168.5.22", maxBytes: 64 * 1024 * 1024, notify: true, requireToken: true, lanOnly: true, sidecar: false });
+		return d.maxMB === "64" && d.port === "8787" && d.notify === true && d.lanIp === "192.168.5.22"
+			&& d.lanOnly === true && d.sidecar === false;
 	})());
 
-	check("toRequest：MB → 字节，并带上 lanIp（空串=自动）与 lanOnly", (() => {
-		const r = ci.toRequest({ dir: " C:\\x ", port: "8787", lanIp: "", maxMB: "8", notify: false, requireToken: false, lanOnly: true });
+	check("toRequest：MB → 字节，并带上 lanIp（空串=自动）/ lanOnly / sidecar", (() => {
+		const r = ci.toRequest({ dir: " C:\\x ", port: "8787", lanIp: "", maxMB: "8", notify: false, requireToken: false, lanOnly: true, sidecar: false });
 		return r.dir === "C:\\x" && r.port === 8787 && r.lanIp === "" && r.maxBytes === 8 * 1024 * 1024
-			&& r.notify === false && r.requireToken === false && r.lanOnly === true;
+			&& r.notify === false && r.requireToken === false && r.lanOnly === true && r.sidecar === false;
+	})());
+
+	check("卡片里确实有 sidecar 开关", (() => {
+		return readFileSync(join(import.meta.dirname, "..", "client.js"), "utf8").includes("每张照片写一张元数据卡");
 	})());
 
 	check("卡片里确实有「只接受局域网来源」开关", (() => {

@@ -1,6 +1,6 @@
 {
   "name": "dsh-photo2dsh-by-lan",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "DSH 手机照片收件箱：手机（iPad/iPhone 快捷指令、Android HTTP Shortcuts）一键把照片经**局域网**传到 PC，落盘到**可配置目录**，Agent 直接可读。配置界面在侧栏 Plugins 本包页面。",
   "type": "module",
   "main": "index.mjs",

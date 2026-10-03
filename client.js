@@ -130,6 +130,7 @@ window.__ModuleLoader__.load({
 				notify: state.notify !== false,
 				requireToken: state.requireToken !== false,
 				lanOnly: state.lanOnly !== false,
+				sidecar: state.sidecar !== false,
 			};
 		}
 
@@ -144,6 +145,7 @@ window.__ModuleLoader__.load({
 				notify: draft.notify === true,
 				requireToken: draft.requireToken === true,
 				lanOnly: draft.lanOnly === true,
+				sidecar: draft.sidecar === true,
 			};
 		}
 
@@ -402,6 +404,23 @@ window.__ModuleLoader__.load({
 												jsx("div", {
 													className: "dsp-hint",
 													children: "关掉 token 时，这是唯一的来源闸门：非私网地址（10./192.168./172.16-31.）的上传一律拒收。/ping 与 /health 不受影响，仍可用于排查连通性。",
+												}),
+											],
+										}),
+									],
+								}),
+
+								jsx("label", {
+									className: "dsp-check",
+									children: [
+										jsx("input", { type: "checkbox", checked: draft.sidecar === true, onChange: set("sidecar") }),
+										jsxs("span", {
+											children: [
+												"每张照片写一张元数据卡（.json）",
+												jsx("div", {
+													className: "dsp-hint",
+													children: "记录了文件名给不出来的信息：哪台设备发的、原始文件名、备注、sha256、嗅探所得格式。"
+														+ "关掉后目录里就只剩照片本身，但会丢掉这些字段。",
 												}),
 											],
 										}),
