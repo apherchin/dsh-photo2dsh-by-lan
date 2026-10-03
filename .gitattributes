@@ -1,0 +1,10 @@
+# ⚠️ .ps1 必须当二进制看待：不做行尾转换。
+# 本项目实测教训：中文 .ps1 若被 autocrlf 动了行尾/BOM，PowerShell 5.1 会直接解析失败。
+# 本插件的 toast.ps1 是**纯 ASCII**（中文走 UTF-8 的 JSON 文件），所以不依赖 BOM，
+# 但这条规则仍然保留 —— 将来若要在脚本里写中文，它会救你一命。
+*.ps1 -text
+
+*.png binary
+*.jpg binary
+
+* text=auto eol=lf

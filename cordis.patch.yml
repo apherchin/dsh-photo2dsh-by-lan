@@ -1,0 +1,18 @@
+# Layer owned by the `dsh-photo2dsh-by-lan` bundle.
+#
+# 一行装配：`name` 写**包名**，DSH 从 profile 的 node_modules 里解析它。
+#
+# ⚠️ 这一行的 name 必须**恰好等于包名**——官方契约（dsh-client-ui-plugin-manager README）：
+#    `dsh-client-modules` 只把一个包的浏览器半侧挂在"说明符恰为包名"的那一行 Loader 行上。
+#    写成别的名字，本包的**配置卡片就不会出现**（宿主半边照常工作，只是没有面板页面）。
+#
+# 正确的安装方式（会自动把本 bundle 记进 `dsh.profile.bundles`，无需手工编辑 profile 文件）：
+#   dsh plugin --profile <profile> add dsh-photo2dsh-by-lan
+# ⚠️ 按包名安装的前提就是本文件存在 —— package.json 的 `dsh.bundle.patch` 指向它；
+#    没有这个声明的包，plugin manager 会**回滚整次安装**。
+#
+# 本插件**不需要**在 patch 里写 config：端口/目录/上限/通知等全部由插件自己的配置文档
+# `$DSH_HOME/photo2dsh-by-lan.json` 决定，**侧栏 Plugins → 本包页面的配置卡片是唯一真源**。
+- insert:
+    - id: photo2dsh-by-lan
+      name: "dsh-photo2dsh-by-lan"

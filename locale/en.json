@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Photo2DSH LAN Photo Inbox",
+    "description": "Send photos from a phone (iOS Shortcuts, Android HTTP Shortcuts) to this PC over the LAN with one tap; files land in a configurable folder and the agent can read them directly."
+  }
+}
