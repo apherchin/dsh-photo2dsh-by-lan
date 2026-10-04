@@ -12,6 +12,15 @@ Its configuration UI lives in the DSH sidebar: **Plugins → this package's page
 
 ---
 
+## Features
+
+- **One tap on the phone** — iOS Shortcuts or Android HTTP Shortcuts POST a photo; nothing to install on the phone beyond that.
+- **You choose the landing folder** — configured in the panel; files appear there immediately.
+- **Agent-readable** — the folder is a normal directory, so DSH agents can read/analyse the photos right away.
+- **Toast on arrival** — a Windows notification confirms each photo (with a click-through).
+- **No cloud, no IM app, no mobile app, no `app.asar` patching.**
+- **Optional token gate** — off by default; when off, the LAN is the trust boundary (see §6).
+- **Offline test bench** — 50 assertions including every real-device failure mode we hit.
 ## 1. Install
 
 ```powershell

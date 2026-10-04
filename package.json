@@ -1,7 +1,7 @@
 {
   "name": "dsh-photo2dsh-by-lan",
-  "version": "0.1.2",
-  "description": "DSH 手机照片收件箱：手机（iPad/iPhone 快捷指令、Android HTTP Shortcuts）一键把照片经**局域网**传到 PC，落盘到**可配置目录**，Agent 直接可读。配置界面在侧栏 Plugins 本包页面。",
+  "version": "0.1.3",
+  "description": "DSH 手机照片收件箱：手机（iOS 快捷指令 / Android HTTP Shortcuts）一键把照片经**局域网**传到这台 PC 的可配置目录并弹通知，Agent 直接可读；不依赖云、不用装手机 App、不改 app.asar。配置界面在侧栏 Plugins 本包页面。 | DSH LAN photo inbox: one tap on your phone (iOS Shortcuts / Android HTTP Shortcuts) sends photos over the LAN into a configurable folder on this PC, with a toast — directly readable by the agent. No cloud, no IM app, no mobile app, no app.asar patching. Config UI on the Plugins page.",
   "type": "module",
   "main": "index.mjs",
   "icon": "./icon.svg",
@@ -25,7 +25,8 @@
     "cordis.patch.yml",
     "icon.svg",
     "scripts/*.ps1",
-    "locale/*.json"
+    "locale/*.json",
+    "README.zh.md"
   ],
   "dsh": {
     "bundle": {
@@ -46,10 +47,19 @@
     "dsh-plugin",
     "plugin",
     "photo",
+    "photo-transfer",
+    "camera",
     "inbox",
     "upload",
     "lan",
-    "shortcuts"
+    "local-first",
+    "self-hosted",
+    "shortcuts",
+    "ios",
+    "android",
+    "windows",
+    "照片",
+    "局域网"
   ],
   "license": "MIT",
   "author": {
